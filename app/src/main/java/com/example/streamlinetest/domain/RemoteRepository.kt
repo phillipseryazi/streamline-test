@@ -30,7 +30,6 @@ class RemoteRepository(context: Context) {
             .create(APIService::class.java)
     }
 
-
     suspend fun getUniversities(): List<UniversityDTO>? {
         return try {
             val response = retrofit.getUniversities("Uganda")

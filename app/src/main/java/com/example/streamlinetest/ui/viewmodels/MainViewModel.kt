@@ -5,13 +5,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.streamlinetest.data.local.UniversityEntity
-import com.example.streamlinetest.data.remote.UniversityDTO
 import com.example.streamlinetest.domain.LocalRepository
 import com.example.streamlinetest.domain.RemoteRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MainViewModel(application: Application) : AndroidViewModel(Application()) {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val applicationContext
         get() = getApplication<Application>()
 
@@ -36,8 +35,9 @@ class MainViewModel(application: Application) : AndroidViewModel(Application()) 
 
     fun getAllUniversities() {
         viewModelScope.launch(Dispatchers.IO) {
-            _universities.postValue(localRepository.getAllUniversities())
+            localRepository.getAllUniversities().collect {
+                _universities.postValue(it)
+            }
         }
     }
-
 }

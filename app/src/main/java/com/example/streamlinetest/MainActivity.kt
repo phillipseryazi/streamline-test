@@ -3,7 +3,6 @@ package com.example.streamlinetest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,13 +17,12 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.streamlinetest.data.local.UniversityEntity
 import com.example.streamlinetest.ui.theme.StreamlineTestTheme
 import com.example.streamlinetest.ui.viewmodels.MainViewModel
 
 class MainActivity : ComponentActivity() {
-
-    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +32,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    UniversityList(mainViewModel)
+                    UniversityList()
                 }
             }
         }
@@ -43,16 +41,23 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun UniversityList(mainViewModel: MainViewModel) {
+fun UniversityList(mainViewModel: MainViewModel = viewModel()) {
     val universities = mainViewModel.universities.observeAsState().value
 
     LaunchedEffect(key1 = null, block = {
         mainViewModel.getAllUniversities()
     })
 
-    LazyColumn {
-        items(universities!!) { uni ->
-            UniversityCard(universityEntity = uni)
+    if (universities != null && universities.isNotEmpty()) {
+        LazyColumn {
+            items(universities) { uni ->
+                UniversityCard(universityEntity = uni)
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+            }
         }
     }
 }
@@ -70,12 +75,14 @@ fun UniversityCard(
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
             Text(
+                modifier = Modifier.padding(start = 8.dp),
                 text = universityEntity.name,
-                style = MaterialTheme.typography.h3
+                style = MaterialTheme.typography.h4
             )
             Text(
+                modifier = Modifier.padding(start = 8.dp),
                 text = universityEntity.country,
-                style = MaterialTheme.typography.h4
+                style = MaterialTheme.typography.h6
             )
         }
     }

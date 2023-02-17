@@ -5,15 +5,16 @@ import androidx.room.Room
 import com.example.streamlinetest.data.local.StreamDatabase
 import com.example.streamlinetest.data.local.UniversityEntity
 import com.example.streamlinetest.data.remote.UniversityDTO
+import kotlinx.coroutines.flow.Flow
 
 class LocalRepository(context: Context) {
-
     private var db: StreamDatabase
 
     init {
         db = Room.databaseBuilder(
             context,
-            StreamDatabase::class.java, "database-stream"
+            StreamDatabase::class.java,
+            "database-stream"
         ).build()
     }
 
@@ -23,7 +24,7 @@ class LocalRepository(context: Context) {
         universityList.forEach { universityDTO ->
             val dbResult = dao.selectUniversityByName(universityDTO.name)
 
-            if (dbResult != null) {
+            if (dbResult == null) {
                 dao.insertUniversity(
                     UniversityEntity(
                         domains = universityDTO.domains,
@@ -38,7 +39,7 @@ class LocalRepository(context: Context) {
         }
     }
 
-    suspend fun getAllUniversities(): List<UniversityEntity> {
+    fun getAllUniversities(): Flow<List<UniversityEntity>> {
         return dao.getAllUniversities()
     }
 
